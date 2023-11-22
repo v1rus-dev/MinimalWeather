@@ -13,9 +13,21 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+        for index in 0..<10 {
+            let newCity = City(context: viewContext)
+            newCity.name = "Minsk \(index)"
+            newCity.id = Int64(index)
+            newCity.country_code = "BY"
+            newCity.country_id = Int16(234)
+            newCity.lat = 23.34242
+            newCity.lon = 56.3563
+            newCity.state_code = "State123"
+            newCity.state_id = Int16(12)
+            
+            let newCountry = Country(context: viewContext)
+            newCountry.id = Int32(index)
+            newCountry.name = "Minsk \(index)"
+            newCountry.ios2 = "index\(index)"
         }
         do {
             try viewContext.save()
@@ -29,6 +41,29 @@ struct PersistenceController {
     }()
 
     let container: NSPersistentContainer
+    
+    func isEmpty(entityName: String) -> Bool {
+        let fetchReq = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        do {
+            let count = try container.viewContext.count(for: fetchReq)
+            return count == 0
+        } catch {
+            print("Error counting objects: \(error)")
+            return false
+        }
+    }
+    
+    func getContext() -> NSManagedObjectContext {
+        container.viewContext
+    }
+    
+    func saveChangesByContext(context: NSManagedObjectContext) {
+        do {
+            try context.save()
+        } catch {
+            print("Error save changes")
+        }
+    }
 
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "MinimalWeather")

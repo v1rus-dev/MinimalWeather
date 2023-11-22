@@ -7,15 +7,14 @@
 
 import SwiftUI
 
-struct SearchView: View {
+struct SearchPanelView: View {
     
-    @State
-    var searchText: String = ""
+    @Binding
+    var searchText: String
     
     var body: some View {
         HStack {
             TextField("Search city", text: $searchText)
-                .frame(width: .infinity)
             if (searchText.isEmpty) {
                 Image(systemName: "magnifyingglass")
                     .foregroundStyle(Color(red: 0.77, green: 0.77, blue: 0.77))
@@ -35,5 +34,5 @@ struct SearchView: View {
 }
 
 #Preview {
-    SearchView()
+    SearchPanelView(searchText: .constant("Hello"))
 }
