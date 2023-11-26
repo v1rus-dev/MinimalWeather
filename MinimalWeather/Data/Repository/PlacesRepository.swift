@@ -25,7 +25,7 @@ class PlacesRepository {
                 }
                 persistenceController.saveChangesByContext(context: context)
             case .failure(let error):
-                print("Load countries error: \(error?.localizedDescription)")
+                print("Load countries error: \(String(describing: error?.localizedDescription))")
             }
         }
     }

@@ -13,8 +13,6 @@ struct ContentView: View {
     
     @ObservedObject
     private var mainViewModel: MainViewModel = MainViewModel()
-    @ObservedObject
-    private var searchViewModel: SearchViewModel = SearchViewModel.shared
     
     @State
     private var isOpenSearchSheet: Bool = false
@@ -22,16 +20,12 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                SearchButton {
-                    isOpenSearchSheet = true
-                }
-                Spacer()
+
+            }
+            .refreshable {
+                await mainViewModel.getWeather()
             }
         }
-        .sheet(isPresented: $isOpenSearchSheet, content: {
-            SearchScreenView()
-                .environmentObject(searchViewModel)
-        })
         .onAppear(perform: {
             mainViewModel.requestLocationAutorization()
         })

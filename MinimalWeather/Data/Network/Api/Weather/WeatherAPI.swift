@@ -16,13 +16,10 @@ class WeatherAPI : WebRepository {
     
     private init() {}
     
-    func getWeatherByLocation(location: CLLocation) -> AnyPublisher<WeatherInCurrentLocationResponse, Error> {
-        let requestData = WeatherRouter.weatherByCurrentCoordinate(longitude: location.coordinate.longitude, latitude: location.coordinate.latitude)
+    func getWeatherByLocation(location: CLLocationCoordinate2D) async -> DataWrapper<WeatherInCurrentLocationResponse> {
+        let requestData = WeatherRouter.weatherByCurrentCoordinate(longitude: location.longitude, latitude: location.latitude)
         
-        let request: AnyPublisher<WeatherInCurrentLocationResponse, Error> = call(urlRequest: requestData)
-        
-        return request
-            .eraseToAnyPublisher()
+        return await callAsync(urlRequest: requestData)
     }
 }
 

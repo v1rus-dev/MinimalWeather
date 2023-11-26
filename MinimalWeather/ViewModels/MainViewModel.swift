@@ -11,9 +11,11 @@ import Combine
 
 @MainActor
 class MainViewModel : ObservableObject {
+    
+    private let getWeatherUseCase = GetWeatherUseCase()
+    
     @Published var locationManager = UserLocationManager()
     private var cancellables = Set<AnyCancellable>()
-    private var weatherApi = WeatherAPI.shared
     
     init() {
         getLocationAfterLaunch()
@@ -23,23 +25,18 @@ class MainViewModel : ObservableObject {
         locationManager.requestLocationAutorization()
     }
     
-    func getWeather(location: CLLocation) async {
-        weatherApi.getWeatherByLocation(location: location)
-            .sinkToLoadable({ loadable in
-                print("Error: \(loadable.error)")
-                print("Succes: \(loadable.value)")
-            })
-            .store(in: &cancellables)
+    func getWeather() async {
+        if let location = locationManager.userLocation?.coordinate {
+            await getWeatherUseCase.getWeatherByLocation(location: location)
+        }
     }
     
     private func getLocationAfterLaunch() {
         locationManager.$userLocation.sink { newLocation in
             print("NewLocation: \(String(describing: newLocation))")
             
-            if let location = newLocation {
-                Task {
-                    await self.getWeather(location: location)
-                }
+            Task {
+                await self.getWeather()
             }
         }.store(in: &cancellables)
     }
